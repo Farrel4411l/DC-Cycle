@@ -49,6 +49,12 @@ export function App() {
     await loadAll()
   }
 
+  const handleResetDemo = async () => {
+    setLoading(true)
+    await api.resetStaticDemo()
+    await loadAll()
+  }
+
   if (loading && !dashboard) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#090E1A] text-slate-200">
@@ -70,19 +76,32 @@ export function App() {
           </h1>
           <p className="mt-2 text-xs text-slate-400">{error}</p>
           <p className="mt-2 text-xs text-slate-500">
-            Make sure the FastAPI server is running on <code className="text-cyan-300">http://127.0.0.1:8001</code>.
+            Make sure the FastAPI server is running on <code className="text-cyan-300">http://127.0.0.1:8001</code>, or launch the built-in browser demo mode.
           </p>
-          <button
-            type="button"
-            onClick={() => {
-              setLoading(true)
-              loadAll()
-            }}
-            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-bold text-slate-950 hover:bg-emerald-400"
-          >
-            <RefreshCw className="h-4 w-4" />
-            <span>Retry Connection</span>
-          </button>
+          <div className="mt-5 flex flex-wrap justify-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => {
+                setLoading(true)
+                loadAll()
+              }}
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-bold text-slate-950 hover:bg-emerald-400"
+            >
+              <RefreshCw className="h-4 w-4" />
+              <span>Retry Connection</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                api.enableStaticDemo()
+                setLoading(true)
+                loadAll()
+              }}
+              className="inline-flex items-center gap-2 rounded-xl border border-cyan-500/40 bg-cyan-500/15 px-4 py-2.5 text-xs font-bold text-cyan-300 hover:bg-cyan-500/25"
+            >
+              <span>Launch In-Browser Demo</span>
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -100,6 +119,8 @@ export function App() {
         anomalyCount={anomalyCount}
         certifiedCount={certifiedCount}
         apiConnected={error === null}
+        isStaticDemo={api.isStaticDemo()}
+        onResetDemo={handleResetDemo}
       />
 
       <main className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">

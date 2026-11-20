@@ -4,6 +4,7 @@ import {
   Cpu,
   FileCheck2,
   Recycle,
+  RotateCcw,
   ShieldAlert,
   ShieldCheck,
   TrendingUp,
@@ -17,6 +18,8 @@ interface HeaderProps {
   anomalyCount: number
   certifiedCount: number
   apiConnected: boolean
+  isStaticDemo: boolean
+  onResetDemo?: () => void
 }
 
 const TABS: { key: TabKey; label: string; shortLabel: string; icon: typeof BarChart3 }[] = [
@@ -53,6 +56,8 @@ export function Header({
   anomalyCount,
   certifiedCount,
   apiConnected,
+  isStaticDemo,
+  onResetDemo,
 }: HeaderProps) {
   const chainValid = ledgerStatus?.valid ?? true
 
@@ -105,10 +110,34 @@ export function Header({
 
             <div className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#111827] px-3 py-1.5 text-xs text-slate-300">
               <Activity
-                className={`h-3.5 w-3.5 ${apiConnected ? 'text-emerald-400' : 'text-amber-400'}`}
+                className={`h-3.5 w-3.5 ${
+                  apiConnected
+                    ? isStaticDemo
+                      ? 'text-cyan-400'
+                      : 'text-emerald-400'
+                    : 'text-amber-400'
+                }`}
               />
-              <span>{apiConnected ? 'FastAPI + SQLite Live' : 'Reconnecting...'}</span>
+              <span>
+                {!apiConnected
+                  ? 'Reconnecting...'
+                  : isStaticDemo
+                    ? 'Static Demo (WebCrypto SHA-256)'
+                    : 'FastAPI + SQLite Live'}
+              </span>
             </div>
+
+            {isStaticDemo && onResetDemo && (
+              <button
+                type="button"
+                onClick={onResetDemo}
+                title="Reset interactive demo ledger to initial 5 seeded batches"
+                className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-[#111827] px-2.5 py-1.5 text-xs font-medium text-slate-300 transition hover:border-cyan-500/50 hover:text-cyan-300"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                <span>Reset Demo</span>
+              </button>
+            )}
           </div>
         </div>
 
